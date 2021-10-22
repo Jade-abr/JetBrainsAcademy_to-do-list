@@ -4,90 +4,104 @@
   <meta charset="UTF-8">
   <title>JetBrains-Academy To-Do List</title>
   <style>
-    .style span {
+    .completed-task-style span {
       text-decoration: line-through;
     }
+
     .task {
       margin: 0 8px;
     }
   </style>
 </head>
 <body>
-
-<div id="app">
-  <header>
-    <h1>Daily ToDo</h1>
-    <input type="text" name="text" placeholder="What is your mission?" id="input-task">
-    <button id="add-task-button">Add Task</button>
-  </header>
-
-  <div id="wrapper">
-    <ul id="task-list">
-    </ul>
-  </div>
-
+<header>
+  <h1>Daily ToDo</h1>
+  <input type="text" name="text" placeholder="What is your mission?" id="input-task">
+  <button id="add-task-button">Add Task</button>
+</header>
+<div id="wrapper">
+  <ul id="task-list">
+  </ul>
 </div>
-
-
 </div>
-
 </body>
 
 <script>
 
   var list = document.querySelector('#task-list');
   var deleteIt = document.getElementsByClassName("delete-btn");
-  var changeIt = document.getElementsByClassName("complete");
+  var changeIt = document.getElementsByClassName("checkbox-input");
 
-  function onInit() {
+  function getValues() {
+    var storedValues = localStorage.getItem('ul-task-list');
+    if (!storedValues) {
+      list.innerHTML = '<li>' +
+        '<input type="checkbox" class="checkbox-input">' +
+        ' <span class="task">Task One</span>' +
+        ' <button class="delete-btn">Delete</button>' +
+        '  </li>' +
+        ' <li>' +
+        ' <input type="checkbox" class="checkbox-input">' +
+        ' <span class="task">Task Two</span>' +
+        ' <button class="delete-btn">Delete</button>' +
+        ' </li>' +
+        '  <li>' +
+        ' <input type="checkbox" class="checkbox-input">' +
+        ' <span class="task">Task Three</span>' +
+        '<button class="delete-btn">Delete</button>' +
+        ' </li>';
+    } else {
+      list.innerHTML = storedValues;
+    }
+    afterGetValues();
+  }
+
+  function afterGetValues() {
     // add event listener on task at the initialization
     for (var i = 0; i < deleteIt.length; i++) {
-      console.log(i);
       deleteIt[i].addEventListener("click", removeItem);
     }
     for (var j = 0; j < changeIt.length; j++) {
-      console.log(j);
       changeIt[j].addEventListener("click", completeItem);
     }
+
+    //Adds text to the list if not empty
+    document.getElementById("add-task-button").addEventListener("click", function () {
+      var task = document.getElementById("input-task").value;
+      if (task) {
+        addNewTask(task);
+        document.getElementById("input-task").value = "";
+      }
+    });
   }
+
   function store() {
     localStorage.setItem('ul-task-list', list.innerHTML);
   }
 
-  function getValues() {
-    var storedValues =  localStorage.getItem('ul-task-list');
-    if(!storedValues) { // !storedValues
-      list.innerHTML = '<li>'+
-        '<input type="checkbox" class="complete">'+
-        ' <span class="task">Task One</span>'+
-        ' <button class="delete-btn">Delete</button>'+
-        '  </li>'+
-        ' <li>'+
-        ' <input type="checkbox" class="complete">'+
-        ' <span class="task">Task Two</span>'+
-        ' <button class="delete-btn">Delete</button>'+
-        ' </li>'+
-        '  <li>'+
-        ' <input type="checkbox" class="complete">'+
-        ' <span class="task">Task Three</span>'+
-        '<button class="delete-btn">Delete</button>'+
-        ' </li>';
-    }
-    else {
-      list.innerHTML = storedValues;
-    }
+  //Adds new item to the list
+  function addNewTask(item) {
+    var list = document.getElementById("task-list");
+    var newItem = document.createElement("li");
+    var checkboxItem = document.createElement("input");
+    checkboxItem.type = "checkbox";
+    checkboxItem.classList.add("checkbox-input");
+    checkboxItem.addEventListener("click", completeItem);
+    newItem.appendChild(checkboxItem);
+    var spanItem = document.createElement("span")
+    spanItem.classList.add("task");
+    spanItem.textContent = item;
+    newItem.appendChild(spanItem);
+    //creates remove button
+    var remove = document.createElement("button");
+    remove.classList.add("delete-btn");
+    remove.textContent = 'Delete';
+    remove.addEventListener("click", removeItem);
+    newItem.appendChild(remove);
+    //insert new item before the first element
+    list.insertBefore(newItem, list.childNodes[0]);
+    store();
   }
-
-
-  getValues();
-  //Adds text to todo list - if not empty
-  document.getElementById("add-task-button").addEventListener("click", function () {
-    var task = document.getElementById("input-task").value;
-    if (task) {
-      addNewTask(task);
-      document.getElementById("input-task").value = "";
-    }
-  });
 
   function removeItem() {
     var item = this.parentNode;
@@ -96,47 +110,20 @@
     store();
   }
 
-  function completeItem(){
-    console.log('click');
+  function completeItem() {
     var item = this.parentNode;
     var childItem = this.parentNode.firstChild;
-    if (item.classList.contains('style')) {
-      item.classList.remove('style');
+    if (item.classList.contains('completed-task-style')) {
+      item.classList.remove('completed-task-style');
       childItem.removeAttribute('checked');
     } else {
-      item.classList.add("style");
+      item.classList.add("completed-task-style");
       childItem.setAttribute('checked', 'true');
     }
-
     store();
   }
 
-
-  //Adds new item to todo list
-  function addNewTask(item) {
-    var list = document.getElementById("task-list");
-    var newItem = document.createElement("li");
-    var checkboxItem = document.createElement("input");
-    checkboxItem.type = "checkbox";
-    checkboxItem.classList.add("complete");
-    checkboxItem.addEventListener("click", completeItem);
-    newItem.appendChild(checkboxItem);
-    var spanItem = document.createElement("span")
-    spanItem.classList.add("task");
-    spanItem.textContent = item;
-    newItem.appendChild(spanItem);
-    //creates remove and complete buttons + add classes
-    var remove = document.createElement("button");
-    remove.classList.add("delete-btn");
-    remove.textContent = 'Delete';
-    remove.addEventListener("click", removeItem);
-    newItem.appendChild(remove);
-    //insert new todo before the first element
-    list.insertBefore(newItem, list.childNodes[0]);
-    store();
-  }
-
- onInit();
+  getValues();
 
 </script>
 </html>
