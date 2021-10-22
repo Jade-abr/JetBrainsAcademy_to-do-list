@@ -1,1 +1,1 @@
-To-Do-List
+JetBrains Academy To-Do List
