@@ -1,0 +1,7 @@
+.completed-task-style span {
+  text-decoration: line-through;
+}
+
+.task {
+  margin: 0 8px;
+}
