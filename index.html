@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>To-Do List</title>
+  <title>JetBrains-Academy To-Do List</title>
   <style>
-    .style span{
+    .style span {
       text-decoration: line-through;
+    }
+    .task {
+      margin: 0 8px;
     }
   </style>
 </head>
@@ -23,8 +26,6 @@
     </ul>
   </div>
 
-
-
 </div>
 
 
@@ -35,6 +36,20 @@
 <script>
 
   var list = document.querySelector('#task-list');
+  var deleteIt = document.getElementsByClassName("delete-btn");
+  var changeIt = document.getElementsByClassName("complete");
+
+  function onInit() {
+    // add event listener on task at the initialization
+    for (var i = 0; i < deleteIt.length; i++) {
+      console.log(i);
+      deleteIt[i].addEventListener("click", removeItem);
+    }
+    for (var j = 0; j < changeIt.length; j++) {
+      console.log(j);
+      changeIt[j].addEventListener("click", completeItem);
+    }
+  }
   function store() {
     localStorage.setItem('ul-task-list', list.innerHTML);
   }
@@ -82,15 +97,20 @@
   }
 
   function completeItem(){
+    console.log('click');
     var item = this.parentNode;
+    var childItem = this.parentNode.firstChild;
     if (item.classList.contains('style')) {
       item.classList.remove('style');
+      childItem.removeAttribute('checked');
     } else {
       item.classList.add("style");
+      childItem.setAttribute('checked', 'true');
     }
 
     store();
   }
+
 
   //Adds new item to todo list
   function addNewTask(item) {
@@ -116,17 +136,7 @@
     store();
   }
 
-  //add event listener to pre-made list items
-  var deleteIt = document.getElementsByClassName("delete-btn");
-  for (var i = 0; i < deleteIt.length; i++) {
-    deleteIt[i].addEventListener("click", removeItem);
-  }
-
-  var changeIt = document.getElementsByClassName("complete");
-  for (var i = 0; i < changeIt.length; i++){
-    changeIt[i].addEventListener("click", completeItem);
-  }
-
+ onInit();
 
 </script>
 </html>
